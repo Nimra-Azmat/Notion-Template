@@ -95,32 +95,26 @@ def main(db_id, spreadsheet_id, sheet_name):
     # Create tasks in the Notion database
     # if assignee and task already exist from the above loop result skip  the task assignment if not create it
     for ids in userids:
-        task_found = False  # Flag to track if the task is found for the current user ID
         for task in task_list:
-            if ids in assignee_list and task in tasks_list:
-                task_found = True
-                print(f"Task '{task[0]}' already exists for user ID '{ids}'.")
-                break
-            if not task_found:
-                task_data = {
-                    "parent": {"database_id": db_id},
-                    "properties": {
-                        "Tasks": {
-                            "title": [{"type": "text", "text": {"content": task[0]}}]
-                        },
-                        "Status": {"select": {"name": "Incomplete", "color": "red"}},
-                        "Date": {"date": {"start": current_date}},
-                        "Assignee": {
-                            "type": "people",
-                            "people": [{"object": "user", "id": ids}],
-                        },
+            task_data = {
+                "parent": {"database_id": db_id},
+                "properties": {
+                    "Tasks": {
+                        "title": [{"type": "text", "text": {"content": task[0]}}]
                     },
-                }
-                data = json.dumps(task_data)
-                res = requests.request("POST", createUrl, headers=headers, data=data)
-                print(
-                    f"Task '{task[0]}' created successfully for user ID '{ids}' in the Notion database."
-                )
+                    "Status": {"select": {"name": "Incomplete", "color": "red"}},
+                    "Date": {"date": {"start": current_date}},
+                    "Assignee": {
+                        "type": "people",
+                        "people": [{"object": "user", "id": ids}],
+                    },
+                },
+            }
+            data = json.dumps(task_data)
+            res = requests.request("POST", createUrl, headers=headers, data=data)
+            print(
+                f"Task '{task[0]}' created successfully for user ID '{ids}' in the Notion database."
+            )
     return res
 
 
